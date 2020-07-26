@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+        <title>vue侧边栏的切换(响应式)</title>
+        <style>
+                * {
+                        margin: 0;
+                        padding: 0;
+                        box-sizing: border-box;
+                        font: 12pt/1.5 '微软雅黑'
+                }
+
+                .page {
+                        width: 100vw;
+                        height: 100vh;
+                        position: fixed;
+                        left: 0;
+                        top: 0;
+                }
+
+                .rMenu {
+                        width: 50vw;
+                        height: 100vh;
+                        text-align: center;
+                        position: fixed;
+                        left: 0;
+                        top: 0;
+                        transform: translateX(100vw);
+                        background-color: skyblue;
+                        transition: transform .6s;
+                }
+
+                .active {
+                        transform: translateX(50vw);
+                }
+        </style>
+</head>
+
+<body>
+        <div id="app">
+                <div class="page">
+                        <h1>首页</h1>
+                        <button @click="toggleMenu">切换侧边栏</button>
+                </div>
+                <div class="rMenu" :class="{active:isShow}">
+                        侧边栏
+                </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js""></script>
+                <script>
+                        var app = new Vue({
+                                el: '#app',
+                                data: {
+                                        isShow: false
+                                },
+                                methods: {
+                                        toggleMenu: function () {
+                                                this.isShow = !this.isShow;
+                                        }
+                                }
+                        })
+                </script>
+        </body>
+
+</html>

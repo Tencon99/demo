@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Vue修饰符小项目：天气查询（和风天气API）</title>
+    <style>
+        #app {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        span {
+            color: tomato;
+        }
+
+        #view {
+            width: 100vw;
+            height: 100vh;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <h1>天气查询系统：</h1>
+        <!-- 天气查询表单 start -->
+        <form action="" method="post">
+            <input type="text" name="username" id="username" v-model="city" value="" placeholder="请输入城市名" />
+
+            <!-- 提交事件不再重载页面    .prevent (事件修饰符)-->
+            <input @click.prevent="searchWeather" type="submit" value="提交">
+        </form>
+        <!-- 天气查询表单 end -->
+
+        <!-- 天气信息栏 start -->
+        <div id="weather" v-show="isShow">
+            <h1>当前{{city}}的天气情况为：<span>{{text}}</span>
+            </h1>
+            <p>温度为：<span>{{temp}}</span>摄氏度</p>
+        </div>
+        <!-- 天气信息栏 end -->
+
+        <div v-show="isShow">
+            <iframe id="view" :src="fxLink" frameborder="0" v-if="city !=''?true:false"></iframe>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        var app = new Vue({
+            el: '#app',
+            data: {
+                city: '',//查询城市名
+                location: null,//城市id，用于查询城市天气
+                now: {},//查询城市天气数据
+                text: '',//天气情况
+                temp: '',//温度
+                isShow: false,//是否显示天气信息栏,
+                fxLink: ''
+            },
+            methods: {
+                searchWeather: async function () {
+                    console.log('查询' + this.city + '天气');
+                    let httpUrlCity = `https://geoapi.heweather.net/v2/city/lookup?location=${this.city}&key=db70ef48ed14443c9a7e947e241c8add`
+                    let res = await fetch(httpUrlCity)
+                    let result = await res.json()
+                    // console.log(result)
+                    this.location = result.location[0].id
+                    // console.log(this.location)
+                    let httpUrl = `https://devapi.heweather.net/v7/weather/now?location=${this.location}&key=db70ef48ed14443c9a7e947e241c8add`;
+                    let res1 = await fetch(httpUrl)
+                    let result1 = await res1.json()
+                    console.log(result1);
+                    this.now = result1.now;
+                    this.fxLink = result1.fxLink;
+                    this.text = this.now.text;
+                    this.temp = this.now.temp;
+                    this.isShow = true;
+                }
+            },
+            watch: {
+                city: function () {
+                    // 当城市名字为空时，初始化数据
+                    if (this.city == '') {
+                        this.isShow = false
+                        this.location = null
+                        this.now = {}
+                        this.text = ''
+                        this.temp = ''
+                    }
+                    // console.log(this.city)
+                }
+            }
+        })
+    </script>
+
+</body>
+
+</html>
